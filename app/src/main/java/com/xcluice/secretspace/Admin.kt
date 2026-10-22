@@ -14,7 +14,7 @@ import android.os.Bundle
 class AdminReceiver : DeviceAdminReceiver() {
     override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
         val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        val admin = getComponentName(context)
+        val admin = ComponentName(context, AdminReceiver::class.java)
         val pm = context.packageManager
 
         try {
