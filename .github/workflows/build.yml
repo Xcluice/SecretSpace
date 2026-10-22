@@ -32,7 +32,7 @@ jobs:
           gradle assembleRelease -PversionCode=${{ github.run_number }} --no-daemon --console=plain > build.log 2>&1
           code=$?
           if [ $code -ne 0 ]; then
-            msg=$(grep -E "^e: |error:|What went wrong|Execution failed|^> |Could not|FAILED" build.log | head -25 | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')
+            msg=$(grep -vE "^> Task .*(UP-TO-DATE|NO-SOURCE|SKIPPED)?$" build.log | grep -E "^e: |error:|What went wrong|Execution failed for|Could not|FAILED|AAPT|R8|Caused by|^\\* What|^  [A-Za-z]" | head -25 | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')
             echo "::error title=Build failed::$msg"
           fi
           exit $code
