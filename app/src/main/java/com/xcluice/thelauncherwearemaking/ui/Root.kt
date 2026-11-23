@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import com.xcluice.thelauncherwearemaking.AppInfo
 import com.xcluice.thelauncherwearemaking.LauncherViewModel
 import kotlinx.coroutines.delay
