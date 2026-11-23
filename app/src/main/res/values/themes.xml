@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Vanta" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowAnimationStyle">@style/VantaWindowAnimation</item>
+        <item name="android:colorControlHighlight">@android:color/transparent</item>
+        <item name="android:colorEdgeEffect">@android:color/transparent</item>
+        <item name="android:textColorHighlight">#33FFFFFF</item>
+    </style>
+
+    <style name="VantaWindowAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/vanta_fade_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/vanta_fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/vanta_fade_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/vanta_fade_out</item>
+        <item name="android:taskOpenEnterAnimation">@anim/vanta_fade_in</item>
+        <item name="android:taskOpenExitAnimation">@anim/vanta_fade_out</item>
+        <item name="android:taskCloseEnterAnimation">@anim/vanta_fade_in</item>
+        <item name="android:taskCloseExitAnimation">@anim/vanta_fade_out</item>
+        <item name="android:taskToFrontEnterAnimation">@anim/vanta_fade_in</item>
+        <item name="android:taskToFrontExitAnimation">@anim/vanta_fade_out</item>
+        <item name="android:taskToBackEnterAnimation">@anim/vanta_fade_in</item>
+        <item name="android:taskToBackExitAnimation">@anim/vanta_fade_out</item>
+    </style>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Bold V -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M33,35 L44,35 L54,61 L64,35 L75,35 L59.5,76 L48.5,76 Z" />
+    <!-- Small orbit dot -->
+    <path
+        android:fillColor="#9A9A9A"
+        android:pathData="M54,28 m-2.6,0 a2.6,2.6 0 1,0 5.2,0 a2.6,2.6 0 1,0 -5.2,0" />
+</vector>

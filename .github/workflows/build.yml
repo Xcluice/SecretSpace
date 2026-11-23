@@ -1,4 +1,4 @@
-name: Build Release APK
+name: Build Vanta (release)
 
 on:
   push:
@@ -9,49 +9,66 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04
+  release:
+    runs-on: ubuntu-latest
+    env:
+      KS_B64: ${{ secrets.VANTA_KEYSTORE_B64 }}
+      KS_PASS: ${{ secrets.VANTA_KEYSTORE_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: "17"
 
-      - name: Accept Android SDK licenses
-        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+      - uses: android-actions/setup-android@v3
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: 8.9
+          gradle-version: "8.9"
+
+      # Stable signing key: uses repo secrets when present, otherwise a key kept in the Actions cache.
+      - name: Restore signing key
+        uses: actions/cache@v4
+        with:
+          path: .signing
+          key: vanta-signing-v1
+
+      - name: Prepare signing
+        run: |
+          mkdir -p .signing
+          if [ -n "$KS_B64" ] && [ -n "$KS_PASS" ]; then
+            echo "$KS_B64" | base64 -d > .signing/release.jks
+            echo "$KS_PASS" > .signing/pass
+          elif [ ! -f .signing/release.jks ]; then
+            PASS=$(openssl rand -hex 16)
+            keytool -genkeypair -keystore .signing/release.jks -storepass "$PASS" -keypass "$PASS" \
+              -alias vanta -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Vanta, O=Xcluice, C=IN"
+            echo "$PASS" > .signing/pass
+          fi
+          echo "VANTA_KEYSTORE_PATH=$PWD/.signing/release.jks" >> "$GITHUB_ENV"
+          echo "VANTA_KEYSTORE_PASSWORD=$(cat .signing/pass)" >> "$GITHUB_ENV"
+          echo "VANTA_KEY_PASSWORD=$(cat .signing/pass)" >> "$GITHUB_ENV"
+          echo "VANTA_KEY_ALIAS=vanta" >> "$GITHUB_ENV"
 
       - name: Build release APK
-        run: |
-          set +e
-          gradle assembleRelease -PversionCode=${{ github.run_number }} --no-daemon --console=plain > build.log 2>&1
-          code=$?
-          if [ $code -ne 0 ]; then
-            msg=$(grep -vE "^> Task .*(UP-TO-DATE|NO-SOURCE|SKIPPED)?$" build.log | grep -E "^e: |error:|What went wrong|Execution failed for|Could not|FAILED|AAPT|R8|Caused by|^\\* What|^  [A-Za-z]" | head -25 | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')
-            echo "::error title=Build failed::$msg"
-          fi
-          exit $code
+        run: gradle :app:assembleRelease --no-daemon --stacktrace
 
-      - name: Rename APK
+      - name: Name the APK
         run: |
-          mkdir -p dist
-          cp app/build/outputs/apk/release/*.apk dist/Notes.apk
-          ls -la dist
+          VER=$(grep versionName app/build.gradle.kts | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          cp app/build/outputs/apk/release/app-release.apk "Vanta-${VER}-build${{ github.run_number }}.apk"
+          echo "APK_NAME=Vanta-${VER}-build${{ github.run_number }}.apk" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Notes-release
-          path: dist/Notes.apk
+          name: Vanta-release
+          path: ${{ env.APK_NAME }}
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.run_number }}
-          name: v${{ github.run_number }}
-          files: dist/Notes.apk
-          make_latest: true
+          tag_name: build-${{ github.run_number }}
+          name: Vanta build ${{ github.run_number }}
+          files: ${{ env.APK_NAME }}

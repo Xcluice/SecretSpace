@@ -1,2 +1,3 @@
-# Manifest-declared components are kept automatically by AGP.
--keep class com.xcluice.secretspace.AdminReceiver { *; }
+# Vanta release rules
+-keepattributes *Annotation*
+-dontwarn org.jetbrains.annotations.**
